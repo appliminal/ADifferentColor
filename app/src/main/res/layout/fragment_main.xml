@@ -1,0 +1,243 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivityFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ffffff"
+    xmlns:ads="http://schemas.android.com/apk/res-auto"
+    >
+    <!--
+    android:id="@+id/mainLayout"
+    -->
+
+    <!-- -
+    メインのフラグメント。画面内に主要レイアウトを配置
+    <!- -->
+
+    <!-- 画面中央のブロックが並ぶ部分のレイアウト（枠のみ） -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:paddingTop="30dp">
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/container_color_blocks"
+            android:layout_centerHorizontal="true">
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+    <!-- ゲーム終了後に表示するメニュー（最初は非表示にしておく）-->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="200dp"
+        android:layout_height="240dp"
+        android:id="@+id/container_menu"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:background="@drawable/menu_frame"
+        android:visibility="invisible">
+    <include layout="@layout/layout_menu" />
+    </RelativeLayout>
+
+    <!-- 画面中央上部の説明文 -->
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="62dp"
+        android:layout_marginTop="0dp"
+        android:background="#eeeeee">
+    <!-- -
+    @ToDo 要調整
+    <!- -->
+        <TextView
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="0dp"
+        android:gravity="center"
+        android:textSize="25dp"
+        android:textColor="#000000"
+        android:text="1つだけ違う色があるよ！"
+        />
+        <!-- 色の異なる箱はどれかな？ -->
+    </RelativeLayout>
+
+
+    <!-- -
+    @ToDo 要調整
+    <!- -->
+    <!-- 点数と時間 -->
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="69dp"
+        android:orientation="horizontal"
+        android:id="@+id/header"
+        >
+        <LinearLayout android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="8"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="3"
+                android:layout_gravity="center_horizontal"
+                android:gravity="bottom"
+                android:layout_marginBottom="3dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="12dp"
+                    android:text="（ベストスコア: xxx）"
+                    android:id="@+id/best_score"/>
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="5"
+                android:layout_gravity="center_horizontal"
+                android:gravity="top">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="24dp"
+                    android:text="スコア： 00"
+                    android:textColor="#333333"
+                    android:id="@+id/current_score"/>
+            </RelativeLayout>
+        </LinearLayout>
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1">
+        </RelativeLayout>
+        <RelativeLayout android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="5"
+            android:gravity="right"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="4dp"
+                android:textSize="50dp"
+                android:textColor="#000000"
+                android:text="10"
+                android:id="@+id/current_timer_second"
+                />
+        </RelativeLayout>
+        <RelativeLayout android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="3"
+            android:gravity="left"
+            android:layout_gravity="center_vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:text=":00"
+                android:id="@+id/current_timer_millis"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+
+<!--
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="50dp"
+    android:layout_marginTop="60dp"
+    android:background="#ffeecc"
+    android:id="@+id/header"
+        >
+
+    </RelativeLayout>
+-->
+
+    <!-- 広告 -->
+    <com.google.android.gms.ads.AdView
+        android:id="@+id/adView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        ads:adSize="BANNER"
+        ads:adUnitId="@string/banner_ad_unit_id">
+    </com.google.android.gms.ads.AdView>
+
+
+<!--
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="69dp"
+        android:orientation="horizontal"
+        android:id="@+id/header"
+        >
+        <RelativeLayout android:layout_margin="9dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="0dp"
+                android:textSize="12dp"
+                android:text="（ベストスコア: xxx）"
+                android:textColor="#666666"
+                android:id="@+id/best_score"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentLeft="true"
+                android:gravity="center_horizontal"
+                android:layout_marginTop="18dp"
+                android:textSize="24dp"
+                android:text="スコア：  xx"
+                android:textColor="#333333"
+                android:id="@+id/current_score"
+                />
+        </RelativeLayout>
+        <RelativeLayout android:layout_margin="0dp"
+            android:layout_width="0dp"
+            android:layout_height="60dp"
+            android:layout_weight="1">
+            <TextView
+                android:layout_marginLeft="40dp"
+                android:gravity="right"
+                android:layout_width="80dp"
+                android:layout_height="match_parent"
+                android:textSize="50dp"
+                android:textColor="#000000"
+                android:text="xx"
+                android:id="@+id/current_timer_second"
+                />
+            <TextView
+                android:layout_marginLeft="120dp"
+                android:layout_width="50dp"
+                android:layout_marginTop="7dp"
+                android:layout_height="match_parent"
+                android:textSize="25dp"
+                android:textColor="#000000"
+                android:text=":00"
+                android:id="@+id/current_timer_millis"
+                />
+        </RelativeLayout>
+    </LinearLayout>
+
+
+-->
+
+</RelativeLayout>

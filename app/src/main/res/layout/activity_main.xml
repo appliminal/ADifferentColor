@@ -1,0 +1,19 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment"
+    android:name="net.appliminal.adifferentcolor.MainActivityFragment"
+    tools:layout="@layout/fragment_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+<!-- -
+    <fragment> の android:name 属性には、レイアウトにインフレートする Fragment クラスを指定する。
+    レイアウトが作成されると、指定されたフラグメントがインスタンス化され、onCreateView() が呼ばれ、
+    inflater.inflateで返されたfragment要素がViewとして挿入される。
+
+    tools属性は開発時の追加情報の指定のために使われるもの。
+        tools:layout 使用するレイアウトファイル
+        tools:context このレイアウトが使用されるアクティビティ（呼び出し元のような）
+<!- -->
+
+</fragment>
