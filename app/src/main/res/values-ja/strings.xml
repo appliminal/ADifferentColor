@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">色がちがうよ</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="main_header_title">1つだけ違う色があるよ！</string>
+
+    <!-- （ベストスコア: xxx）の部分の部品 -->
+    <string name="main_bestscore_text_left">"（ベストスコア: "</string>
+    <string name="main_bestscore_text_right">）</string>
+
+    <!-- スコア： 00 の部分の部品 -->
+    <string name="main_currentscore_text_left">"スコア： "</string>
+
+    <!-- メニュー用 -->
+    <string name="main_menu_text_retry">"リトライ"</string>
+    <string name="main_menu_text_gamefinish">"終了"</string>
+
+
+
+
+
+</resources>

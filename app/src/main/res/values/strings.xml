@@ -1,7 +1,23 @@
 <resources>
-    <string name="app_name">色がちがうよ</string>
+    <string name="app_name">A Different Color</string>
     <string name="action_settings">Settings</string>
 
+    <string name="main_header_title">Find A Different Color!</string>
+
+    <!-- （ベストスコア: xxx）の部分の部品 -->
+    <string name="main_bestscore_text_left">"(Best Score: "</string>
+    <string name="main_bestscore_text_right">)</string>
+
+    <!-- スコア： 00 の部分の部品 -->
+    <string name="main_currentscore_text_left">"Score:"</string>
+
+    <!-- メニュー用 -->
+    <string name="main_menu_text_retry">"Retry"</string>
+    <string name="main_menu_text_gamefinish">"Quit the Game"</string>
+
+
+
+    <!-- 以下、言語によらず共通-->
     <!-- -
         This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
         For more information, see https://support.google.com/admob/answer/3052638

@@ -2,6 +2,7 @@ package net.appliminal.adifferentcolor;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentTransaction;
@@ -13,11 +14,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+
 
 //@FIXME 途中でスマホの向き変えたら落ちる
 
@@ -57,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         instanceState = savedInstanceState;
+
+        //ロケール設定。setContentViewの前に行う必要がある。
+        setLocale();
+
         setContentView(R.layout.activity_main);
 
         //画面中央にブロックを初期状態で配置
@@ -131,6 +138,28 @@ public class MainActivity extends AppCompatActivity {
     public void onUserLeaveHint() {
         //Activityの終了 => MainActivityなのでアプリケーションの終了
         this.finish();
+    }
+
+    /**
+     * ロケール設定
+     * TODO Preferenceとかに持って、読み込むようにしたい。
+     */
+    private void setLocale(){
+        return;
+        /* サンプル
+        //Locale locale = new Locale(Locale.JAPANESE);
+        //Locale.setDefault(locale);
+        Locale.setDefault(Locale.JAPANESE);
+        Configuration config = new Configuration();
+        config.locale = Locale.JAPANESE;
+        //getResources().updateConfiguration(config, getResources().getDisplayMetrics()); //設定変更を反映
+
+        //getBaseContextは必要？？
+        getBaseContext().getResources().updateConfiguration(config, getResources().getDisplayMetrics()); //設定変更を反映
+
+        //getResources().updateConfiguration(config, null);
+        //setContentView(R.layout.activity_main);
+        */
     }
 
     /**
@@ -254,7 +283,10 @@ public class MainActivity extends AppCompatActivity {
     private void updateBestScoreView() {
         TextView tBestScore = (TextView) findViewById(R.id.best_score);
         String t = (bestScore == BEST_SCORE_NOT_SET) ? "---" : String.valueOf(bestScore);
-        String text = "（ベストスコア: " + t + "）";
+        Resources res = getResources();
+        String t1 = res.getString(R.string.main_bestscore_text_left);
+        String t2 = res.getString(R.string.main_bestscore_text_right);
+        String text = t1 + t + t2;
         tBestScore.setText(text);
     }
 
@@ -277,9 +309,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateCurrentScoreView(){
-        TextView t = (TextView) findViewById(R.id.current_score);
+        TextView tv = (TextView) findViewById(R.id.current_score);
+        Resources res = getResources();
+        String t = res.getString(R.string.main_currentscore_text_left);
+
         //4桁で右詰め
-        t.setText("スコア: " + String.format("%1$4d", currentScore));
+        tv.setText(t + String.format("%1$4d", currentScore));
     }
 
     /**
@@ -373,6 +408,12 @@ public class MainActivity extends AppCompatActivity {
         //} catch (InterruptedException e) {
         //    //do nothing
         //}
+
+
+        Button b1 = (Button) findViewById(R.id.button_game_retry);
+        b1.setAllCaps(false);
+        Button b2 = (Button) findViewById(R.id.button_game_finish);
+        b2.setAllCaps(false);
 
         RelativeLayout v = (RelativeLayout) findViewById(R.id.container_menu);
         v.setVisibility(View.VISIBLE);

@@ -11,12 +11,21 @@
         android:icon="@drawable/adifferentcolor_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
-        android:versionCode="1"
-        android:versionName="0.5.0">>
+        android:versionCode="600"
+        android:versionName="0.6.0">>
         <!--
         ・versionCodeは整数値で1つずつ上げていく（Google側で新しいアプリと認識させるため）
         ・versionNameは文字列で。
         　（ルールは、"メジャーバージョン.マイナーバージョン.バグフィックス"、にでもするか。。）
+        →versionCodeは以下のルールにしよう。
+         ・メジャーバージョンは ×10000
+         ・マイナーバージョンは ×100
+         ・バグフィックスは ×1
+
+         //バージョンメモ
+         0.5.0: 初版
+         0.6.0: 英語対応（日本語ロケール以外で、英語表示に）
+
         -->
 
         <!-- This meta-data tag is required to use Google Play Services. -->
@@ -27,7 +36,7 @@
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <!-- android:screenOrientation="portrait" で縦向きに固定 -->
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
