@@ -22,14 +22,21 @@
         This is an ad unit ID for an interstitial test ad. Replace with your own interstitial ad unit id.
         For more information, see https://support.google.com/admob/answer/3052638
     <!- -->
-    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+
+    <!-- テスト用ID:
+        <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    -->
 
     <!-- 2015/09/13に登録したバナー広告のユニットID-->
     <string name="banner_ad_unit_id">ca-app-pub-8471160485904469/4912965630</string>
 
     <!--
-        サンプルのユニットID:
-        ca-app-pub-3940256099942544/6300978111
+    サンプルのユニットID:
+    ca-app-pub-3940256099942544/6300978111
     -->
+
+    <!-- 2016/01/02に登録したインタースティシャル広告のユニットID-->
+    <string name="interstitial_ad_unit_id">ca-app-pub-8471160485904469/1748844035</string>
+
 
 </resources>

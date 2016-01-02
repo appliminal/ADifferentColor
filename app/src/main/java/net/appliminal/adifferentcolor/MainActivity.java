@@ -1,5 +1,6 @@
 package net.appliminal.adifferentcolor;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
@@ -18,8 +19,12 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.InterstitialAd;
+
+import java.util.Random;
 
 
 //@FIXME 途中でスマホの向き変えたら落ちる
@@ -32,8 +37,8 @@ import com.google.android.gms.ads.AdView;
 
 /**
  *
- * @author Masaaki Yonai
- * @version 1.0
+ * @author Appliminal
+ * @version 1.2.0
  *
  */
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
     private final int ADDITIONAL_TIME = 5; //正解時に追加する秒数
     private final int MAX_TIME_LEFT = 20; //残り時間の上限
     private final int INCORRECT_PENALTY_TIME = -3; //間違えた時のペナルティ（残り時間から引かれる）
+
+    private InterstitialAd interstitialAd;
+    private final int INTERSTITIAL_ADVERTISEMENT_DISPLAY_RATE = 7; //リトライ時、全画面広告を何回に一度表示させるか //TODO 値は要調整
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +92,8 @@ public class MainActivity extends AppCompatActivity {
         gameStart();
 
         //広告を有効化
-        loadAdvertisement();
+        loadBannerAdvertisement();
+        initializeInterstitialAdvertisement();
 
     }
 
@@ -382,6 +391,14 @@ public class MainActivity extends AppCompatActivity {
     public void gameRetryButtonClicked(View button) {
         LogUtil.methodCalled(this.toString());
 
+        //ランダムに、全画面広告を表示
+        if(needToShowInterstitialAd()) {
+            showInterstitialAdvertisement();
+            //TODO 要確認
+            //全画面広告を表示すると、Activityが削除されるので、後続処理は不要。
+            //。。。と思うが、設定した広告ユニットの上限に達した場合はどうなるんだろ。showされずに返ってくるだけ？
+        }
+
         hideMenu();
 
         ////落ちる
@@ -446,17 +463,19 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
+    /**
+     * アプリケーションを再起動
+     * この方法が正しいのか不明
+     */
+    public void rebootApplication() {
+        Intent intent = getIntent();
+        overridePendingTransition(0, 0);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        finish();
 
-    ////アプリケーションを再起動する場合
-    //public void reload() {
-    //    Intent intent = getIntent();
-    //    overridePendingTransition(0, 0);
-    //    intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-    //    finish();
-    //
-    //    overridePendingTransition(0, 0);
-    //    startActivity(intent);
-    //}
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+    }
 
     /**
      * バナー広告を有効化する
@@ -466,12 +485,53 @@ public class MainActivity extends AppCompatActivity {
      * ・manifestファイルにパーミッション等を記述
      * ・adViewをレイアウトファイルに配置
      */
-    private void loadAdvertisement(){
+    private void loadBannerAdvertisement(){
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
     }
 
+    /**
+     * インタースティシャル広告（全面広告）の初期化
+     */
+    private void initializeInterstitialAdvertisement(){
+        interstitialAd = new InterstitialAd(this);
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
+        AdRequest adRequest = new AdRequest.Builder().build();
+
+        interstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                //TODO もっとうまい方法あるはず。単純に広告表示前の画面に戻したいだけ。。
+                rebootApplication(); //アプリ自体を再起動
+            }
+        });
+
+        interstitialAd.loadAd(adRequest);
+    }
+
+    /**
+     * インタースティシャル広告（全面広告）の表示
+     * 表示させたら、ユーザは広告をタップ、✕ボタンをタップ、物理ボタン（戻るとか）操作が可能
+     */
+    private void showInterstitialAdvertisement(){
+        if (interstitialAd.isLoaded()) {
+            interstitialAd.show();
+        }
+    }
+
+    /**
+     * 単純に乱数から、全画面広告を表示させるかを決めて返す
+     * これとは別に、interstitialAd.showできる上限？？を広告ID作成時に設定済みなので注意。
+     *
+     * @return
+     */
+    private boolean needToShowInterstitialAd(){
+        Random random = new Random();
+        int n = random.nextInt(INTERSTITIAL_ADVERTISEMENT_DISPLAY_RATE);
+        LogUtil.methodCalled("乱数: " + n);
+        return (n == 0) ? true : false;
+    }
 
 }

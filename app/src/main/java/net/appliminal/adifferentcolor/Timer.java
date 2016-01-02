@@ -1,7 +1,7 @@
 package net.appliminal.adifferentcolor;
 
 /**
- * Created by yonai on 15/09/13.
+ *
  */
 
 import android.os.CountDownTimer;

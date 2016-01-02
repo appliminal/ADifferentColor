@@ -3,7 +3,7 @@ package net.appliminal.adifferentcolor;
 import android.util.Log;
 
 /**
- * Created by yonai on 15/09/06.
+ *
  */
 public class LogUtil {
 
