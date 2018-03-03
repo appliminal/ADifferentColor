@@ -21,7 +21,8 @@
         android:text="@string/main_menu_text_retry"
         android:id="@+id/button_game_retry"
         android:onClick="gameRetryButtonClicked"
-        android:layout_gravity="center_horizontal"/>
+        android:layout_gravity="center_horizontal"
+        android:longClickable="true" />
 
     <Space
         android:layout_width="match_parent"
@@ -29,20 +30,22 @@
         android:layout_gravity="center_horizontal"
         android:layout_weight="1"/>
 
-    <Button
-        android:layout_width="150dp"
-        android:layout_height="50dp"
-        android:textSize="18dp"
-        android:background="@drawable/menu_button_status"
-        android:text="@string/main_menu_text_gamefinish"
-        android:onClick="gameFinishButtonClicked"
-        android:id="@+id/button_game_finish"
-        android:layout_gravity="center_horizontal"/>
+    <!--
+<Button
+    android:layout_width="150dp"
+    android:layout_height="50dp"
+    android:textSize="18dp"
+    android:background="@drawable/menu_button_status"
+    android:text="@string/main_menu_text_gamefinish"
+    android:onClick="gameFinishButtonClicked"
+    android:id="@+id/button_game_finish"
+    android:layout_gravity="center_horizontal"/>
 
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_weight="1"/>
+<Space
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_weight="1"/>
+    -->
 
 </LinearLayout>

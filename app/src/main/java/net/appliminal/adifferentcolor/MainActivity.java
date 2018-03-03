@@ -5,6 +5,10 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -26,6 +30,7 @@ import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
 
+import android.widget.Toast;
 
 //@FIXME 途中でスマホの向き変えたら落ちる
 
@@ -38,7 +43,7 @@ import java.util.Random;
 /**
  *
  * @author Appliminal
- * @version 1.2.0
+ * @version 1.3.0
  *
  */
 public class MainActivity extends AppCompatActivity {
@@ -49,6 +54,9 @@ public class MainActivity extends AppCompatActivity {
     private final String PREFERENCE_KEY_BEST_SCORE = "best_score";
     private final int BEST_SCORE_NOT_SET = -1;
     private int bestScore;
+    private final String PREFERENCE_KEY_AD_FLAG = "ad_flag"; //広告表示フラグの設定値
+    private final int AD_FLAG_ON = 1;
+    private final int AD_FLAG_OFF = 0;
 
     private ColorBlocksFragment colorBlocksFragment = null;
     //private int cbfWidth, cbfHeight; //@TODO intでいいのか？
@@ -63,6 +71,14 @@ public class MainActivity extends AppCompatActivity {
 
     private InterstitialAd interstitialAd;
     private final int INTERSTITIAL_ADVERTISEMENT_DISPLAY_RATE = 7; //リトライ時、全画面広告を何回に一度表示させるか //TODO 値は要調整
+
+    //ver1.3〜
+    //音は別クラスにしたほうが良さそう。。
+    private SoundPool soundPool;
+    private int sound_correct_1; // 正解の効果音の識別ID
+    private int sound_wrong_1; // 不正解の効果音の識別ID
+    int SOUND_CORRECT_1 = 0;
+    int SOUND_WRONG_1 = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +107,30 @@ public class MainActivity extends AppCompatActivity {
         //ゲームスタート（ユーザ操作の有効化、タイマー開始）
         gameStart();
 
-        //広告を有効化
-        loadBannerAdvertisement();
-        initializeInterstitialAdvertisement();
+        if (isAdFlagON()) {
+            //広告を有効化
+            loadBannerAdvertisement();
+            initializeInterstitialAdvertisement();
+        }
+
+        //ver1.3限定
+        //タイトル長押し時、広告表示フラグをOFFにして一回アプリを落とす
+        //→次回以降はフラグOFFで起動され、このonLongClickも効かないためONには戻せない想定。。
+        View titleView = (View) findViewById(R.id.header_title);
+        titleView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                Toast.makeText(getApplicationContext(), "長押し", Toast.LENGTH_LONG).show();
+                if (isAdFlagON()) {
+                    toggleAndSaveAdFlag();
+                    finish();
+                }
+                return true; // 戻り値をtrueにするとOnClickイベントは発生しない
+            }
+        });
+
+        //ver1.3〜
+        initializeSoundPool();
 
     }
 
@@ -153,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
      * ロケール設定
      * TODO Preferenceとかに持って、読み込むようにしたい。
      */
-    private void setLocale(){
+    private void setLocale() {
         return;
         /* サンプル
         //Locale locale = new Locale(Locale.JAPANESE);
@@ -242,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
      * updateTimerView都の違いは以下：
      * ・秒数+1しない
      * ・ミリ秒の表示をする
-     *
      */
     private void initializeTimerView() {
         int[] timeLeft = mainTimer.getTimeLeft();
@@ -317,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateCurrentScoreView(){
+    private void updateCurrentScoreView() {
         TextView tv = (TextView) findViewById(R.id.current_score);
         Resources res = getResources();
         String t = res.getString(R.string.main_currentscore_text_left);
@@ -391,12 +427,14 @@ public class MainActivity extends AppCompatActivity {
     public void gameRetryButtonClicked(View button) {
         LogUtil.methodCalled(this.toString());
 
-        //ランダムに、全画面広告を表示
-        if(needToShowInterstitialAd()) {
-            showInterstitialAdvertisement();
-            //TODO 要確認
-            //全画面広告を表示すると、Activityが削除されるので、後続処理は不要。
-            //。。。と思うが、設定した広告ユニットの上限に達した場合はどうなるんだろ。showされずに返ってくるだけ？
+        if (isAdFlagON()) {
+            //ランダムに、全画面広告を表示
+            if (needToShowInterstitialAd()) {
+                showInterstitialAdvertisement();
+                //TODO 要確認
+                //全画面広告を表示すると、Activityが削除されるので、後続処理は不要。
+                //。。。と思うが、設定した広告ユニットの上限に達した場合はどうなるんだろ。showされずに返ってくるだけ？
+            }
         }
 
         hideMenu();
@@ -426,11 +464,13 @@ public class MainActivity extends AppCompatActivity {
         //    //do nothing
         //}
 
-
         Button b1 = (Button) findViewById(R.id.button_game_retry);
         b1.setAllCaps(false);
-        Button b2 = (Button) findViewById(R.id.button_game_finish);
-        b2.setAllCaps(false);
+
+        ////ver1.3〜
+        //終了ボタンは廃止
+        //Button b2 = (Button) findViewById(R.id.button_game_finish);
+        //b2.setAllCaps(false);
 
         RelativeLayout v = (RelativeLayout) findViewById(R.id.container_menu);
         v.setVisibility(View.VISIBLE);
@@ -439,6 +479,11 @@ public class MainActivity extends AppCompatActivity {
     private void hideMenu() {
         RelativeLayout v = (RelativeLayout) findViewById(R.id.container_menu);
         v.setVisibility(View.INVISIBLE);
+    }
+
+    boolean isMenuVisible(){
+        RelativeLayout v = (RelativeLayout) findViewById(R.id.container_menu);
+        return (v.getVisibility() == View.VISIBLE) ? true : false;
     }
 
     private void initializeColorBlocksFragmentView() {
@@ -454,7 +499,7 @@ public class MainActivity extends AppCompatActivity {
 
         //フラグメントの配置
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        if(colorBlocksFragment != null){
+        if (colorBlocksFragment != null) {
             //すでに存在する場合、古いものを削除
             transaction.remove(colorBlocksFragment);
         }
@@ -485,7 +530,7 @@ public class MainActivity extends AppCompatActivity {
      * ・manifestファイルにパーミッション等を記述
      * ・adViewをレイアウトファイルに配置
      */
-    private void loadBannerAdvertisement(){
+    private void loadBannerAdvertisement() {
         AdView mAdView = (AdView) findViewById(R.id.adView);
         AdRequest adRequest = new AdRequest.Builder().build();
         mAdView.loadAd(adRequest);
@@ -494,7 +539,7 @@ public class MainActivity extends AppCompatActivity {
     /**
      * インタースティシャル広告（全面広告）の初期化
      */
-    private void initializeInterstitialAdvertisement(){
+    private void initializeInterstitialAdvertisement() {
         interstitialAd = new InterstitialAd(this);
         interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
@@ -515,7 +560,7 @@ public class MainActivity extends AppCompatActivity {
      * インタースティシャル広告（全面広告）の表示
      * 表示させたら、ユーザは広告をタップ、✕ボタンをタップ、物理ボタン（戻るとか）操作が可能
      */
-    private void showInterstitialAdvertisement(){
+    private void showInterstitialAdvertisement() {
         if (interstitialAd.isLoaded()) {
             interstitialAd.show();
         }
@@ -527,11 +572,86 @@ public class MainActivity extends AppCompatActivity {
      *
      * @return
      */
-    private boolean needToShowInterstitialAd(){
+    private boolean needToShowInterstitialAd() {
         Random random = new Random();
         int n = random.nextInt(INTERSTITIAL_ADVERTISEMENT_DISPLAY_RATE);
         LogUtil.methodCalled("乱数: " + n);
         return (n == 0) ? true : false;
     }
+
+
+    /**
+     * ver1.3〜
+     *
+     * @return
+     */
+    private int readAdFlag() {
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILE_NAME, MODE_PRIVATE);
+        int s = pref.getInt(PREFERENCE_KEY_AD_FLAG, AD_FLAG_ON); //第2引数は設定値がないとき→デフォルトは広告表示ONとする
+        return s;
+    }
+
+    /**
+     * ver1.3〜
+     */
+    private void toggleAndSaveAdFlag() {
+        int s = readAdFlag();
+        s = (s == AD_FLAG_ON) ? AD_FLAG_OFF : AD_FLAG_ON; //フラグを反転
+
+        SharedPreferences pref = getSharedPreferences(PREFERENCE_FILE_NAME, MODE_PRIVATE);
+        Editor editor = pref.edit();
+        editor.putInt(PREFERENCE_KEY_AD_FLAG, s);
+        editor.commit();
+        LogUtil.methodCalled("key: " + PREFERENCE_KEY_AD_FLAG + ", value: " + s);
+    }
+
+    /**
+     * ver1.3〜
+     *
+     * @return
+     */
+    private boolean isAdFlagON() {
+        int s = readAdFlag();
+        return (s == AD_FLAG_ON) ? true : false;
+    }
+
+    /**
+     * ver1.3〜
+     */
+    private void initializeSoundPool() {
+
+        // Android 5.0(Lolipop)より古いかどうかでSoundPoolの使い方は変わってくる
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
+            // Android 5.0(Lolipop)より古いとき
+            soundPool = new SoundPool(2, AudioManager.STREAM_MUSIC, 0);
+        } else {
+            // Android 5.0(Lolipop)以降
+            AudioAttributes attr = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_MEDIA)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                    .build();
+
+            soundPool = new SoundPool.Builder()
+                    .setAudioAttributes(attr)
+                    .setMaxStreams(2)
+                    .build();
+        }
+        sound_correct_1 = soundPool.load(this, R.raw.correct1, 1); // 正解の効果音の識別IDを保存
+        sound_wrong_1 = soundPool.load(this, R.raw.wrong1, 1); // 不正解の効果音の識別IDを保存
+
+    }
+
+    /**
+     * ver1.3〜
+     * @param soundIndex
+     */
+    public void sound(int soundIndex){
+        if(soundIndex == SOUND_CORRECT_1) {
+            soundPool.play(sound_correct_1, 1F, 1F, 0, 0, 1F);
+        }else if(soundIndex == SOUND_WRONG_1) {
+            soundPool.play(sound_wrong_1, 1F, 1F, 0, 0, 1F);
+        }
+    }
+
 
 }

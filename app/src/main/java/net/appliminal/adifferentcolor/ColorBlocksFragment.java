@@ -247,6 +247,13 @@ public class ColorBlocksFragment extends Fragment {
     protected void answeredCorrectly(){
         LogUtil.methodCalled(this.toString());
 
+        if(((MainActivity) this.getActivity()).isMenuVisible() == false){
+            //ver1.3〜
+            //正解音を鳴らす
+            int soundIndex = ((MainActivity) this.getActivity()).SOUND_CORRECT_1;
+            ((MainActivity) this.getActivity()).sound(soundIndex);
+        }
+
         if(isGamePaused) {
             return;
         }
@@ -262,6 +269,14 @@ public class ColorBlocksFragment extends Fragment {
      */
     protected void answeredIncorrectly(){
         LogUtil.methodCalled(this.toString());
+
+        if(((MainActivity) this.getActivity()).isMenuVisible() == false) {
+            //ver1.3〜
+            //不正解音を鳴らす
+            int soundIndex = ((MainActivity) this.getActivity()).SOUND_WRONG_1;
+            ((MainActivity) this.getActivity()).sound(soundIndex);
+        }
+        
         if(isGamePaused){
             return;
         }
