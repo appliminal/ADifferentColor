@@ -34,6 +34,9 @@ public class ColorBlocksFragment extends Fragment {
 
     private RelativeLayout rootView;
 
+    //ver1.3〜 正解ブロックを保持
+    public ColorBlockView correctColorBlockView;
+
     /**
      * コンストラクタ
      */
@@ -130,7 +133,8 @@ public class ColorBlocksFragment extends Fragment {
                 }
 
                 //このブロックの正解/不正解を設定し、インスタンス化
-                cbView = new ColorBlockView(this.getActivity(), isColorCorrect, this);
+                //色の設定もコンストラクタの中で。
+                cbView = new ColorBlockView(this.getActivity(), isColorCorrect, this, Color.HSVToColor(colorHSV));
 
                 //パラメータやマージンはColorBlockViewの属性としてはもたず、ここで設定
                 params = new LinearLayout.LayoutParams(
@@ -160,13 +164,18 @@ public class ColorBlocksFragment extends Fragment {
                 gDrawable = (GradientDrawable) cbView.getBackground();
                 gDrawable.setCornerRadius(blockRadius);
                 hLayout.addView(cbView, params);
-                cbView.setBackgroundColor(Color.HSVToColor(colorHSV));
                 blockIndex++;
 
                 //ここでcbView.setBackgroundColorをすると
                 //事前にcbView.setBackgroundResourceしたリソース(shapeのビュー)を上書きしてしまうようす
                 //cbView.setBackgroundColor(Color.parseColor("#99ff99"));
                 //→ そんなことないような。。
+
+                //ver1.3〜 正解ブロックをインスタンス変数にセット
+                if(isColorCorrect){
+                    correctColorBlockView = cbView;
+                }
+
             }
         }
     }
@@ -247,15 +256,15 @@ public class ColorBlocksFragment extends Fragment {
     protected void answeredCorrectly(){
         LogUtil.methodCalled(this.toString());
 
+        if(isGamePaused) {
+            return;
+        }
+
         if(((MainActivity) this.getActivity()).isMenuVisible() == false){
             //ver1.3〜
             //正解音を鳴らす
             int soundIndex = ((MainActivity) this.getActivity()).SOUND_CORRECT_1;
             ((MainActivity) this.getActivity()).sound(soundIndex);
-        }
-
-        if(isGamePaused) {
-            return;
         }
 
         ((MainActivity)this.getActivity()).getScore(gameLevel);
@@ -270,15 +279,15 @@ public class ColorBlocksFragment extends Fragment {
     protected void answeredIncorrectly(){
         LogUtil.methodCalled(this.toString());
 
+        if(isGamePaused){
+            return;
+        }
+
         if(((MainActivity) this.getActivity()).isMenuVisible() == false) {
             //ver1.3〜
             //不正解音を鳴らす
             int soundIndex = ((MainActivity) this.getActivity()).SOUND_WRONG_1;
             ((MainActivity) this.getActivity()).sound(soundIndex);
-        }
-        
-        if(isGamePaused){
-            return;
         }
 
         ((MainActivity)this.getActivity()).minusScore(gameLevel);
@@ -352,5 +361,7 @@ public class ColorBlocksFragment extends Fragment {
         //Color.RGBToHSV(Color.red(color), Color.green(color), Color.blue(color), hsv);
 
     }
+
+
 
 }

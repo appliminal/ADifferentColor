@@ -12,11 +12,13 @@
     <!--
     ↓ Android Lollipop以降？、ButtonのTextには大文字(textAllCaps)が設定されるのが仕様。
       → showMenu()時に、毎回　setAllCaps(false) することにする。
+
+      150dp
     -->
     <Button
-        android:layout_width="150dp"
-        android:layout_height="80dp"
-        android:textSize="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="120dp"
+        android:textSize="24dp"
         android:background="#bbbbbb"
         android:text="@string/main_menu_text_retry"
         android:id="@+id/button_game_retry"

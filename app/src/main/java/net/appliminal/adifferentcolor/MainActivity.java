@@ -9,6 +9,7 @@ import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -262,8 +265,10 @@ public class MainActivity extends AppCompatActivity {
         //ブロックを押せないようにする
         colorBlocksFragment.gameStop();
 
-        //メニューを表示
-        showMenu();
+        //ver1.3〜
+        //正解ブロックを点滅して示すしたあと、メニューを表示
+        indicateCorrectBlockAndShowMenu();
+
     }
 
     public void timerOnTick(long millisUntilFinished) {
@@ -455,7 +460,7 @@ public class MainActivity extends AppCompatActivity {
         finish(); //これが正しい終了のさせ方？
     }
 
-    private void showMenu() {
+    public void showMenu() {
 
         //TODO ゆっくり表示させたい。。
         //try {
@@ -466,6 +471,10 @@ public class MainActivity extends AppCompatActivity {
 
         Button b1 = (Button) findViewById(R.id.button_game_retry);
         b1.setAllCaps(false);
+
+        //ver1.3〜
+        int s = getColorBlocksFragmentSize(); //これでブロックが並ぶ部分のサイズを取得
+        b1.setWidth((int)Math.floor(s * 0.5)); //単位はpx
 
         ////ver1.3〜
         //終了ボタンは廃止
@@ -653,5 +662,38 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * 1.3〜
+     * 正解ブロックを点滅して示して、その後メニューを表示
+     */
+    private void indicateCorrectBlockAndShowMenu(){
+        //試行錯誤のすえ、取り急ぎこうなった。
+
+        final Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            int count = 0;
+            @Override
+            public void run() {
+                // UIスレッド
+                count++;
+                if (count >= 6) {
+                    showMenu();
+                    return;
+                }
+                //点滅させる
+                if(count == 2 || count == 4){
+                    colorBlocksFragment.correctColorBlockView.hide();
+                }else if(count == 3 || count == 5){
+                    colorBlocksFragment.correctColorBlockView.show();
+                }
+
+                handler.postDelayed(this, 800);
+
+            }
+        };
+
+        handler.post(r);
+
+    }
 
 }
