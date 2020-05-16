@@ -110,11 +110,13 @@ public class MainActivity extends AppCompatActivity {
         //ゲームスタート（ユーザ操作の有効化、タイマー開始）
         gameStart();
 
+        /* 2020/5 広告なしに
         if (isAdFlagON()) {
             //広告を有効化
             loadBannerAdvertisement();
             initializeInterstitialAdvertisement();
         }
+         */
 
         //ver1.3限定
         //タイトル長押し時、広告表示フラグをOFFにして一回アプリを落とす
@@ -432,6 +434,7 @@ public class MainActivity extends AppCompatActivity {
     public void gameRetryButtonClicked(View button) {
         LogUtil.methodCalled(this.toString());
 
+        /* 2020/5 広告なしに
         if (isAdFlagON()) {
             //ランダムに、全画面広告を表示
             if (needToShowInterstitialAd()) {
@@ -441,6 +444,7 @@ public class MainActivity extends AppCompatActivity {
                 //。。。と思うが、設定した広告ユニットの上限に達した場合はどうなるんだろ。showされずに返ってくるだけ？
             }
         }
+         */
 
         hideMenu();
 
@@ -550,7 +554,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initializeInterstitialAdvertisement() {
         interstitialAd = new InterstitialAd(this);
-        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        //2020/5 広告なしに
+        //interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
         AdRequest adRequest = new AdRequest.Builder().build();
 
