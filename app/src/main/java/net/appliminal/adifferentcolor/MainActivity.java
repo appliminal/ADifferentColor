@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.os.Bundle;
+import android.text.util.Linkify;
 import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Menu;
@@ -32,6 +33,8 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.InterstitialAd;
 
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.widget.Toast;
 
@@ -110,13 +113,12 @@ public class MainActivity extends AppCompatActivity {
         //ゲームスタート（ユーザ操作の有効化、タイマー開始）
         gameStart();
 
-        /* 2020/5 広告なしに
+        /* 2020/5 ソースは広告ありのまま */
         if (isAdFlagON()) {
             //広告を有効化
             loadBannerAdvertisement();
             initializeInterstitialAdvertisement();
         }
-         */
 
         //ver1.3限定
         //タイトル長押し時、広告表示フラグをOFFにして一回アプリを落とす
@@ -136,6 +138,9 @@ public class MainActivity extends AppCompatActivity {
 
         //ver1.3〜
         initializeSoundPool();
+
+        //ver1.3.2〜
+        setPrivacyPolicyLink();
 
     }
 
@@ -434,7 +439,7 @@ public class MainActivity extends AppCompatActivity {
     public void gameRetryButtonClicked(View button) {
         LogUtil.methodCalled(this.toString());
 
-        /* 2020/5 広告なしに
+        /* 2020/5 ソースは広告ありのまま */
         if (isAdFlagON()) {
             //ランダムに、全画面広告を表示
             if (needToShowInterstitialAd()) {
@@ -444,7 +449,6 @@ public class MainActivity extends AppCompatActivity {
                 //。。。と思うが、設定した広告ユニットの上限に達した場合はどうなるんだろ。showされずに返ってくるだけ？
             }
         }
-         */
 
         hideMenu();
 
@@ -554,8 +558,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initializeInterstitialAdvertisement() {
         interstitialAd = new InterstitialAd(this);
-        //2020/5 広告なしに
-        //interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
+        /* 2020/5 ソースは広告ありのまま */
+        interstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
 
         AdRequest adRequest = new AdRequest.Builder().build();
 
@@ -700,5 +704,29 @@ public class MainActivity extends AppCompatActivity {
         handler.post(r);
 
     }
+
+
+    /**
+     * ver1.3.2
+     * プライバシーポリシーのリンク先を設定する
+     */
+    private void setPrivacyPolicyLink() {
+        TextView privacyView = (TextView) findViewById(R.id.privacyView);
+        //「Privacy Policy」の文字列が設定されている前提
+        //privacyView.setText("Privacy policy");
+        Pattern pattern = Pattern.compile("Privacy Policy");
+        //プライバシーポリシーの掲載先
+        final String privacyPolicyURL = "https://appliminal.github.io/privacy/adifferentcolor_privacy.html";
+
+        Linkify.TransformFilter filter = new Linkify.TransformFilter() {
+            @Override
+            public String transformUrl(Matcher match, String url) {
+                return privacyPolicyURL;
+            }
+        };
+
+        Linkify.addLinks(privacyView, pattern, privacyPolicyURL, null, filter);
+    }
+
 
 }

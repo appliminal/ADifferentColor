@@ -31,13 +31,16 @@
          1.2.5(4): 栃木県子ども総合科学館での展示用。広告非表示、正解音など。
          ・・・
          1.3.2(7): Google Play再登録のため広告なしに
+         1.3.3(8): Android App Bundleの仕組みを採用
         -->
 
         <!-- This meta-data tag is required to use Google Play Services. -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
+        <!--
+            android:value="7095000" />
+        -->
         <activity
             android:name=".MainActivity"
             android:screenOrientation="portrait"
@@ -50,12 +53,11 @@
             </intent-filter>
         </activity>
 
-        <!-- //2020/5 広告なしに
+        <!-- //2020/5 広告なしに -->
         <activity
             android:name="com.google.android.gms.ads.AdActivity"
             android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:theme="@android:style/Theme.Translucent" />
-        -->
 
     </application>
 

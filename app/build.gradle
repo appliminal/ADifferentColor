@@ -8,9 +8,9 @@ android {
     defaultConfig {
         applicationId "net.appliminal.adifferentcolor"
         minSdkVersion 15
-        targetSdkVersion 26 //2019/5/2 23→26に変更
-        versionCode 7 //2020/5 6から7に
-        versionName "1.3.2" //2020/5 1.3.1から1.3.2に
+        targetSdkVersion 28 //2020/5/17 26→28に変更
+        versionCode 8 //2020/5 6から7、さらに8に
+        versionName "1.3.3" //2020/5 1.3.1から1.3.2、さらに1.3.3に
     }
     buildTypes {
         release {
@@ -31,8 +31,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile 'com.android.support:appcompat-v7:23.0.1'
 
-    /* Google Play再申請のため
+    /* Google Play再申請のため */
     //for using Google Ads
     compile 'com.google.android.gms:play-services-ads:7.0.0'
-     */
 }
